@@ -1,0 +1,4 @@
+Program Notes:
+
+PixelBounce Function is blocking, which needs to be fixed if user input is to be reflected immediately.
+
