@@ -52,9 +52,8 @@ void InitializeNeopixels(PixelColorProperties& pixelColor){
  
   //initalize pixel color to red, and intensity
   pixelColor.colorIntensity = DEFAULT_INTENSITY;
-  pixelColor.intensityRed = pixelColor.colorIntensity;
-  pixelColor.intensityBlue = 0;
-  pixelColor.intensityGreen = 0;   
+  pixelColor.currentColor = RED;    //Default to red
+  
 }
 
 /*
@@ -160,44 +159,85 @@ void PixelBounce(int delayTime, PixelColorProperties& pixelColor, int numberPixe
  *                Relies on calling function to display error message to user. 
  */
  int SelectColor(char colorSelection, PixelColorProperties& pixelColor){
-  if(colorSelection == '1'){  //red
+  if(colorSelection == RED){  //red
      pixelColor.intensityRed = pixelColor.colorIntensity;
      pixelColor.intensityBlue = 0;
-     pixelColor.intensityGreen = 0;
+     pixelColor.intensityGreen = 0; 
+     pixelColor.currentColor = colorSelection;
      return 1;
   }
-  else if(colorSelection == '2'){  //magenta
+  else if(colorSelection == MAGENTA){  //magenta
      pixelColor.intensityRed = pixelColor.colorIntensity/2;
      pixelColor.intensityBlue = pixelColor.colorIntensity/2;
      pixelColor.intensityGreen = 0;
+     pixelColor.currentColor = colorSelection;
      return 1;
   }
-  else if(colorSelection == '3'){  //blue
+  else if(colorSelection == BLUE){  //blue
      pixelColor.intensityRed = 0;
      pixelColor.intensityBlue = pixelColor.colorIntensity;
      pixelColor.intensityGreen = 0;
+     pixelColor.currentColor = colorSelection;
      return 1;
   }
-  else if(colorSelection == '4'){  //cyan
+  else if(colorSelection == CYAN){  //cyan
      pixelColor.intensityRed = 0;
      pixelColor.intensityBlue = pixelColor.colorIntensity/2;
      pixelColor.intensityGreen = pixelColor.colorIntensity/2;
+     pixelColor.currentColor = colorSelection;
      return 1;
   }
-  else if(colorSelection == '5'){  //green
+  else if(colorSelection == GREEN){  //green
      pixelColor.intensityRed = 0;
      pixelColor.intensityBlue = 0;
      pixelColor.intensityGreen = pixelColor.colorIntensity;
+     pixelColor.currentColor = colorSelection;
      return 1;
   }
-  else if(colorSelection == '6'){  //yellow
+  else if(colorSelection == YELLOW){  //yellow
      pixelColor.intensityRed = pixelColor.colorIntensity/2;
      pixelColor.intensityBlue = 0;
      pixelColor.intensityGreen = pixelColor.colorIntensity/2;
+     pixelColor.currentColor = colorSelection;
      return 1;
   }
 
   else{return -1;}  //invalid input
   }
-  
+
+  /*
+ * @Created: 8/11/17 12:24PM Josh Gier
+ * @Function: SelectIntensity
+ * @Parameters:  char intensitySelection - valid numbers are 1-5, corresponding to the following values:
+ *               1-Off 2-Low 3-Medium 4-High 5-Very High
+ *               PixelColorProperties& pixelColor - struct to be updated with selected intensity
+ * @Return: Changes are made to struct. Returns 1 for success, -1 for error. 
+ * @Description:  Changes intensity of pixels, defined in struct, to intensity selected via input parameter intensitySelection.
+ *                Relies on calling function to display error message to user. 
+ */
+ int SelectIntensity(char intensitySelection, PixelColorProperties& pixelColor){
+  if(intensitySelection == '1'){  //off
+     pixelColor.colorIntensity = 0; 
+     return 1;
+  }
+  else if(intensitySelection == '2'){  //low
+     pixelColor.colorIntensity = DEFAULT_INTENSITY/4; 
+     return 1;
+  }
+    else if(intensitySelection == '3'){  //medium
+     pixelColor.colorIntensity = DEFAULT_INTENSITY/2; 
+     return 1;
+  }
+    else if(intensitySelection == '4'){  //high
+     pixelColor.colorIntensity = DEFAULT_INTENSITY*(3/4); 
+     return 1;
+  }
+    else if(intensitySelection == '5'){  //very high
+     pixelColor.colorIntensity = DEFAULT_INTENSITY; 
+     return 1;
+  }
+
+  else{return -1;}  //invalid input
+  }
+ 
  

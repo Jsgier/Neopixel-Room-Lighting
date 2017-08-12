@@ -22,7 +22,7 @@
  */
 
 //enumerated type for state machine governing control program behavior
-typedef enum {MENU, CHANGE_MODE, CHANGE_COLOR, CHANGE_INTENSITY} KeyboardMenuState;
+typedef enum {MENU, CHANGE_MODE, CHANGE_COLOR, CHANGE_INTENSITY, CHANGE_ON_OFF} KeyboardMenuState;
 
 //declare instance of PixelColor Properties type struct, 
 PixelColorProperties pixelColor;
@@ -88,6 +88,7 @@ static int mainMenuGuardFlag = 0;
            Serial.println("2 -- Color");
            Serial.println("3 -- Intensity");
            Serial.println("4 -- Delay");
+           Serial.println("5 -- On/Off");
            Serial.println();
            mainMenuGuardFlag = 1;
          }
@@ -107,6 +108,10 @@ static int mainMenuGuardFlag = 0;
           }
           else if(serialByteReceived == '3'){
             CurrentState = CHANGE_INTENSITY;
+            mainMenuGuardFlag = 0;
+          }
+          else if(serialByteReceived == '5'){
+            CurrentState = CHANGE_ON_OFF;
             mainMenuGuardFlag = 0;
           }
           else{
@@ -172,47 +177,52 @@ static int mainMenuGuardFlag = 0;
          CurrentState = MENU;
          //end of CHANGE_COLOR state
          break;
-         
+
+         //Note: CHANGE_INTENSITY currently giving invalid input after all input
+         //and polling for additional input until three characters are entered. 
     case CHANGE_INTENSITY:
          //display CHANGE_INTENSITY menu, then wait for serial availability
-          Serial.println("Please Enter a value from 1 to 255");
+          Serial.println("Available Intensities:");
           Serial.println();
+          Serial.println("1-Off");
+          Serial.println("2-Low");
+          Serial.println("3-Medium");
+          Serial.println("4-High");
+          Serial.println("5-Very High");
+          Serial.println("Please Select an option:");
          while (Serial.available()<=0){;}
 
-         //read 3 bytes from the serial port, to receive the maximum number.
-         //Concatenate the input string, then convert to int newIntensityVal. 
          serialByteReceived = Serial.read();
          Serial.print(serialByteReceived);
-         if(isDigit(serialByteReceived)){
-          inputString+=serialByteReceived;
-         }
-         while (Serial.available()<=0){;}
-         serialByteReceived = Serial.read();
-         Serial.print(serialByteReceived);
-         if(isDigit(serialByteReceived)){
-          inputString+=serialByteReceived;
-         }
-         while (Serial.available()<=0){;}
-         serialByteReceived = Serial.read();
-         Serial.print(serialByteReceived);
-         if(isDigit(serialByteReceived)){
-          inputString+=serialByteReceived;
-         }
          Serial.println();
 
-         newIntensityVal = inputString.toInt();
-  
-         //If in range, change pixelColor struct. Else, display error. 
-         if((newIntensityVal>=1)&&(newIntensityVal<=255)){
-          pixelColor.colorIntensity = (int)serialByteReceived;
-         }
-         else{
-           Serial.println("Invalid Selection");
-         }
+        if(SelectIntensity(serialByteReceived, pixelColor) != 1){
+          Serial.println("Invalid Selection");
+        }
            
          CurrentState = MENU;
+         break; 
          //end of CHANGE_INTENSITY state
+
+    case CHANGE_ON_OFF:
+
+         if(pixelColor.onState == 1){  //if on, turn off
+          SelectIntensity(1, pixelColor);
+          SelectColor(pixelColor.currentColor, pixelColor);
+          UniformColor(pixelColor, NUM_PIXELS);
+          pixelColor.onState = 0;  
+         }
+         else{  //if off, turn on
+          SelectIntensity(3, pixelColor);
+          SelectColor(pixelColor.currentColor, pixelColor);
+          UniformColor(pixelColor, NUM_PIXELS);
+          pixelColor.onState = 1;
+         }
+
+         CurrentState = MENU;
          break;
+         //end of ON_OFF state
+        
   }//end of state machine
 }//end of loop()
 /*

@@ -17,6 +17,13 @@
 #define OFF 0
 #define DEFAULT_INTENSITY 100
 
+#define RED '1'
+#define MAGENTA '2'
+#define BLUE '3'
+#define CYAN '4'
+#define GREEN '5'
+#define YELLOW '6'
+
 
 /*
  * ------------------------------------------------------------------------------
@@ -27,6 +34,8 @@
 //structure for neopixel color properties
 typedef struct {
   uint8_t intensityRed, intensityGreen, intensityBlue, colorIntensity, currentMode;
+  char currentColor;
+  int onState;
 } PixelColorProperties;
 
 
@@ -45,6 +54,7 @@ typedef struct {
     void ColorProgression(PixelColorProperties& pixelColor);
     void UniformColor(PixelColorProperties& pixelColor, uint16_t numberPixelsOn);
     int SelectColor(char colorSelection, PixelColorProperties& pixelColor);
+    int SelectIntensity(char intensitySelection, PixelColorProperties& pixelColor);
  
  #endif
 
