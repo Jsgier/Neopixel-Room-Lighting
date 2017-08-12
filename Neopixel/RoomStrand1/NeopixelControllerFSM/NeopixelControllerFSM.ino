@@ -1,5 +1,4 @@
-
-
+#include <TimerOne.h>
 #include <Adafruit_NeoPixel.h>
 #include "NeopixelFunctions.h"
 #ifdef __AVR__
@@ -14,6 +13,7 @@
 
 #define NUM_PIXELS_ON 6
 #define DELAY_TIME 20
+#define TWO_HZ 500000
 
 /*
  * ------------------------------------------------------------------------------
@@ -28,7 +28,7 @@ typedef enum {MENU, CHANGE_MODE, CHANGE_COLOR, CHANGE_INTENSITY} KeyboardMenuSta
 PixelColorProperties pixelColor;
 
 char serialByteReceived;
-String inputString " ";
+String inputString;
 int newIntensityVal;
  
  //declare instance of KeyboardMenuState
@@ -51,6 +51,12 @@ void setup() {
   
   //Use Serial Communication
   Serial.begin(9600); 
+
+  //Configure Timer 1 for 2Hz interrupts (0.5s) and Timer 2 for 1kHz interrupts (1ms)
+  Timer1.initialize(TWO_HZ);
+ 
+  
+
   
   //Print Welcome Message
   Serial.println("---Welcome to Neopixel Controller Program---");
@@ -177,19 +183,19 @@ static int mainMenuGuardFlag = 0;
          //Concatenate the input string, then convert to int newIntensityVal. 
          serialByteReceived = Serial.read();
          Serial.print(serialByteReceived);
-         if(isDigit(serialByteReceived){
+         if(isDigit(serialByteReceived)){
           inputString+=serialByteReceived;
          }
          while (Serial.available()<=0){;}
          serialByteReceived = Serial.read();
          Serial.print(serialByteReceived);
-         if(isDigit(serialByteReceived){
+         if(isDigit(serialByteReceived)){
           inputString+=serialByteReceived;
          }
          while (Serial.available()<=0){;}
          serialByteReceived = Serial.read();
          Serial.print(serialByteReceived);
-         if(isDigit(serialByteReceived){
+         if(isDigit(serialByteReceived)){
           inputString+=serialByteReceived;
          }
          Serial.println();
