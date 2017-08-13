@@ -14,8 +14,11 @@
  
 #define PIN 6
 #define NUM_PIXELS 240
+#define ON 1
 #define OFF 0
 #define DEFAULT_INTENSITY 100
+#define DELAY_TIME 20
+#define NUM_PIXELS_ON 6
 
 #define RED '1'
 #define MAGENTA '2'
@@ -23,6 +26,13 @@
 #define CYAN '4'
 #define GREEN '5'
 #define YELLOW '6'
+#define COLOR_OFF '7'
+
+
+//enumerated type for state machine governing control program behavior
+typedef enum {MENU, CHANGE_MODE, CHANGE_COLOR, CHANGE_INTENSITY, CHANGE_ON_OFF} KeyboardMenuState;
+typedef enum {ALL_ON, PIXEL_BOUNCE} DisplayMode;
+
 
 
 /*
@@ -33,9 +43,10 @@
  
 //structure for neopixel color properties
 typedef struct {
-  uint8_t intensityRed, intensityGreen, intensityBlue, colorIntensity, currentMode;
+  uint8_t intensityRed, intensityGreen, intensityBlue, colorIntensity;
   char currentColor;
   int onState;
+  DisplayMode currentMode;
 } PixelColorProperties;
 
 
@@ -55,6 +66,7 @@ typedef struct {
     void UniformColor(PixelColorProperties& pixelColor, uint16_t numberPixelsOn);
     int SelectColor(char colorSelection, PixelColorProperties& pixelColor);
     int SelectIntensity(char intensitySelection, PixelColorProperties& pixelColor);
+    void ReflectChanges(PixelColorProperties& pixelColor);
  
  #endif
 

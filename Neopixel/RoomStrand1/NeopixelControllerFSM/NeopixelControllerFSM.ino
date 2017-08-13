@@ -11,8 +11,7 @@
  * ------------------------------------------------------------------------------
  */
 
-#define NUM_PIXELS_ON 6
-#define DELAY_TIME 20
+
 #define TWO_HZ 500000
 
 /*
@@ -20,9 +19,6 @@
  *                                  Globals
  * ------------------------------------------------------------------------------
  */
-
-//enumerated type for state machine governing control program behavior
-typedef enum {MENU, CHANGE_MODE, CHANGE_COLOR, CHANGE_INTENSITY, CHANGE_ON_OFF} KeyboardMenuState;
 
 //declare instance of PixelColor Properties type struct, 
 PixelColorProperties pixelColor;
@@ -56,14 +52,13 @@ void setup() {
   Timer1.initialize(TWO_HZ);
  
   
-
-  
   //Print Welcome Message
   Serial.println("---Welcome to Neopixel Controller Program---");
   Serial.println();
 
-  //Initialize the state machine
+  //Initialize the state machine, and display mode
   CurrentState = MENU;    
+  pixelColor.currentMode = ALL_ON;
 }
 
 
@@ -137,12 +132,14 @@ static int mainMenuGuardFlag = 0;
   
          //Call neopixel mode display functions depending on user input
          if(serialByteReceived == '1'){
-            Serial.println("Displaying All On Mode");
-            UniformColor(pixelColor, NUM_PIXELS);
+            Serial.println("Displaying All On Mode"); 
+            pixelColor.currentMode = ALL_ON;
+            ReflectChanges(pixelColor);
          }
          else if(serialByteReceived == '2'){
             Serial.println("Displaying Bounce Mode");
-            PixelBounce(DELAY_TIME, pixelColor, NUM_PIXELS_ON, NUM_PIXELS);
+            pixelColor.currentMode = PIXEL_BOUNCE;
+            ReflectChanges(pixelColor);
          }
          else{
            Serial.println("Invalid Selection");
@@ -174,6 +171,9 @@ static int mainMenuGuardFlag = 0;
          if(SelectColor(serialByteReceived, pixelColor) == -1){
            Serial.println("Invalid Selection");
          }
+         else{
+          ReflectChanges(pixelColor);
+         }
          CurrentState = MENU;
          //end of CHANGE_COLOR state
          break;
@@ -199,6 +199,9 @@ static int mainMenuGuardFlag = 0;
         if(SelectIntensity(serialByteReceived, pixelColor) != 1){
           Serial.println("Invalid Selection");
         }
+        else{
+          ReflectChanges(pixelColor);
+        }
            
          CurrentState = MENU;
          break; 
@@ -206,17 +209,17 @@ static int mainMenuGuardFlag = 0;
 
     case CHANGE_ON_OFF:
 
-         if(pixelColor.onState == 1){  //if on, turn off
-          SelectIntensity(1, pixelColor);
+         if(pixelColor.onState == ON){  //if on, turn off
+          SelectIntensity('1', pixelColor);
           SelectColor(pixelColor.currentColor, pixelColor);
           UniformColor(pixelColor, NUM_PIXELS);
-          pixelColor.onState = 0;  
+          pixelColor.onState = OFF;  
          }
          else{  //if off, turn on
-          SelectIntensity(3, pixelColor);
+          SelectIntensity('3', pixelColor);
           SelectColor(pixelColor.currentColor, pixelColor);
           UniformColor(pixelColor, NUM_PIXELS);
-          pixelColor.onState = 1;
+          pixelColor.onState = ON;
          }
 
          CurrentState = MENU;

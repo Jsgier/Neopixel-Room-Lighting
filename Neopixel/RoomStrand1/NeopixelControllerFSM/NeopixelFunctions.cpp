@@ -201,6 +201,13 @@ void PixelBounce(int delayTime, PixelColorProperties& pixelColor, int numberPixe
      pixelColor.currentColor = colorSelection;
      return 1;
   }
+  else if(colorSelection == COLOR_OFF){  //magenta
+     pixelColor.intensityRed = 0;
+     pixelColor.intensityBlue = 0;
+     pixelColor.intensityGreen = 0;
+     pixelColor.currentColor = colorSelection;
+     return 1;
+  }
 
   else{return -1;}  //invalid input
   }
@@ -217,27 +224,49 @@ void PixelBounce(int delayTime, PixelColorProperties& pixelColor, int numberPixe
  */
  int SelectIntensity(char intensitySelection, PixelColorProperties& pixelColor){
   if(intensitySelection == '1'){  //off
-     pixelColor.colorIntensity = 0; 
+     pixelColor.colorIntensity = 0;
+     SelectColor(pixelColor.currentColor, pixelColor); 
      return 1;
   }
   else if(intensitySelection == '2'){  //low
-     pixelColor.colorIntensity = DEFAULT_INTENSITY/4; 
+     pixelColor.colorIntensity = DEFAULT_INTENSITY/4;
+     SelectColor(pixelColor.currentColor, pixelColor);  
      return 1;
   }
     else if(intensitySelection == '3'){  //medium
-     pixelColor.colorIntensity = DEFAULT_INTENSITY/2; 
+     pixelColor.colorIntensity = DEFAULT_INTENSITY/2;
+     SelectColor(pixelColor.currentColor, pixelColor);  
      return 1;
   }
     else if(intensitySelection == '4'){  //high
-     pixelColor.colorIntensity = DEFAULT_INTENSITY*(3/4); 
+     pixelColor.colorIntensity = DEFAULT_INTENSITY*(3/4);
+     SelectColor(pixelColor.currentColor, pixelColor);  
      return 1;
   }
     else if(intensitySelection == '5'){  //very high
-     pixelColor.colorIntensity = DEFAULT_INTENSITY; 
+     pixelColor.colorIntensity = DEFAULT_INTENSITY;
+     SelectColor(pixelColor.currentColor, pixelColor);  
      return 1;
   }
 
   else{return -1;}  //invalid input
   }
+
+    /*
+ * @Created: 8/13/17 10:39AM Josh Gier
+ * @Function: ReflectChanges
+ * @Parameters: PixelColorProperties& pixelColor - struct, contains currentMode enumerates type
+ * @Return: none
+ * @Description:  Helper function, uses current mode to display changes to neopixels given struct.  
+ */ 
+ void ReflectChanges(PixelColorProperties& pixelColor){
+
+  if(pixelColor.currentMode == ALL_ON){
+    UniformColor(pixelColor, NUM_PIXELS);
+    }
+  else if (pixelColor.currentMode == PIXEL_BOUNCE){
+    PixelBounce(DELAY_TIME, pixelColor, NUM_PIXELS_ON, NUM_PIXELS);
+    }
  
- 
+ }
+
